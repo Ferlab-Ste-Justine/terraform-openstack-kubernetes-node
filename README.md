@@ -1,6 +1,6 @@
 # About
 
-This terraform module provisions a worker or master node for a kubernetes cluster.
+This terraform module provisions a base vm that can be setup as a worker or master node for a kubernetes cluster.
 
 # Usage
 
