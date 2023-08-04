@@ -10,6 +10,7 @@ data "template_cloudinit_config" "user_data" {
         chrony = var.chrony
         ssh_host_key_rsa = var.ssh_host_key_rsa
         ssh_host_key_ecdsa = var.ssh_host_key_ecdsa
+        docker_registry_auth = var.docker_registry_auth
       }
     )
   }

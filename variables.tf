@@ -80,3 +80,19 @@ variable "chrony" {
     }
   }
 }
+
+variable docker_registry_auth {
+   description = "Docker registry authentication settings"
+   type        = object({
+     enabled  = bool,
+     url      = string,
+     username = string,
+     password = string
+   })
+   default = {
+     enabled  = false
+     url      = "https://index.docker.io/v1/"
+     username = ""
+     password = ""
+   }
+ }
