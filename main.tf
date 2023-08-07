@@ -1,3 +1,13 @@
+locals {
+  block_devices = var.image_source.volume_id != "" ? [{
+    uuid                  = var.image_source.volume_id
+    source_type           = "volume"
+    boot_index            = 0
+    destination_type      = "volume"
+    delete_on_termination = false
+  }] : []
+}
+
 data "template_cloudinit_config" "user_data" {
   gzip = false
   base64_encode = false
@@ -18,11 +28,12 @@ data "template_cloudinit_config" "user_data" {
 
 resource "openstack_compute_instance_v2" "k8_node" {
   name            = var.name
+  image_id  = var.image_source.image_id != "" ? var.image_source.image_id : null
   flavor_id       = var.flavor_id
   key_pair        = var.keypair_name
 
   user_data = data.template_cloudinit_config.user_data.rendered
-  
+
   network {
     port = var.network_port.id
   }
@@ -32,17 +43,16 @@ resource "openstack_compute_instance_v2" "k8_node" {
   }
 
   dynamic "block_device" {
-    for_each = var.boot_from_volume ? [1] : []
+    for_each = local.block_devices
     content {
-      uuid                  = var.volume_id
-      source_type           = "volume"
-      destination_type      = "volume"
-      boot_index            = 0
-      delete_on_termination = false
+      uuid                  = block_device.value["uuid"]
+      source_type           = block_device.value["source_type"]
+      boot_index            = block_device.value["boot_index"]
+      destination_type      = block_device.value["destination_type"]
+      delete_on_termination = block_device.value["delete_on_termination"]
     }
   }
 
-  image_id = var.boot_from_volume ? null : var.image_id
 
   lifecycle {
     ignore_changes = [

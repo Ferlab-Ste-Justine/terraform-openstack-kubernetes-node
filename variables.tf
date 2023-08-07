@@ -97,13 +97,10 @@ variable docker_registry_auth {
    }
  }
 
-variable "boot_from_volume" {
-  description = "Whether to boot the instance from a volume"
-  type        = bool
-  default     = false
-}
-
-variable "volume_id" {
-  description = "Id of the disk volume to attach to the vm"
-  type        = string
+variable "image_source" {
+  description = "Source of the vm's image"
+  type = object({
+    image_id = string
+    volume_id = string
+  })
 }
