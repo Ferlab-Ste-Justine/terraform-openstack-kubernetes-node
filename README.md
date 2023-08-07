@@ -9,11 +9,11 @@ This terraform module provisions a base vm that can be setup as a worker or mast
 - **name**: Name to give to the vm.
 - **network_port**: Resource of type **openstack_networking_port_v2** to assign to the vm for network connectivity.
 - **server_group**: Server group to assign to the node. Should be of type **openstack_compute_servergroup_v2**.
-- **image_id**: Id of the vm image used to provision the node
+- **image_source**: Source of the image to provision the bastion on. It takes the following keys (only one of the two fields should be used, the other one should be empty):
+  - **image_id**: Id of the image to associate with a vm that has local storage
+  - **volume_id**: Id of a volume containing the os to associate with the vm
 - **flavor_id**: Id of the VM flavor
 - **keypair_name**: Name of the keypair that will be used to ssh to the node
-- **boot_from_volume**: Whether to boot the instance from a volume
-- **volume_id**: Id of the disk volume to attach to the vm
 - **docker_registry_auth**: Optional docker registry authentication settings to have access to private repositories or to avoid reaching the rate limit for anonymous users.
    - **enabled**: If set to false (the default), no docker config file will be created.
    - **url**: Url of the registry you want to authenticate to.
