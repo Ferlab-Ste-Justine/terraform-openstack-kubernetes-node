@@ -12,6 +12,7 @@ This terraform module provisions a base vm that can be setup as a worker or mast
 - **image_id**: Id of the vm image used to provision the node
 - **flavor_id**: Id of the VM flavor
 - **keypair_name**: Name of the keypair that will be used to ssh to the node
+- **boot_from_volume**: Whether to boot the instance from a volume
 - **volume_id**: Id of the disk volume to attach to the vm
 - **docker_registry_auth**: Optional docker registry authentication settings to have access to private repositories or to avoid reaching the rate limit for anonymous users.
    - **enabled**: If set to false (the default), no docker config file will be created.
