@@ -96,3 +96,14 @@ variable docker_registry_auth {
      password = ""
    }
  }
+
+variable "boot_from_volume" {
+  description = "Whether to boot the instance from a volume"
+  type        = bool
+  default     = false
+}
+
+variable "volume_id" {
+  description = "Id of the disk volume to attach to the vm"
+  type        = string
+}

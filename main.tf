@@ -18,11 +18,11 @@ data "template_cloudinit_config" "user_data" {
 
 resource "openstack_compute_instance_v2" "k8_node" {
   name            = var.name
-  image_id        = var.image_id
   flavor_id       = var.flavor_id
   key_pair        = var.keypair_name
-  user_data = data.template_cloudinit_config.user_data.rendered
 
+  user_data = data.template_cloudinit_config.user_data.rendered
+  
   network {
     port = var.network_port.id
   }
@@ -30,6 +30,19 @@ resource "openstack_compute_instance_v2" "k8_node" {
   scheduler_hints {
     group = var.server_group.id
   }
+
+  dynamic "block_device" {
+    for_each = var.boot_from_volume ? [1] : []
+    content {
+      uuid                  = var.volume_id
+      source_type           = "volume"
+      destination_type      = "volume"
+      boot_index            = 0
+      delete_on_termination = false
+    }
+  }
+
+  image_id = var.boot_from_volume ? null : var.image_id
 
   lifecycle {
     ignore_changes = [
