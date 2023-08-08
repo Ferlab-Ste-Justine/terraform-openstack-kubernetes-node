@@ -13,11 +13,6 @@ variable "server_group" {
   type        = any
 }
 
-variable "image_id" {
-  description = "ID of the vm image used to provision the node"
-  type        = string
-}
-
 variable "flavor_id" {
   description = "ID of the VM flavor"
   type        = string
