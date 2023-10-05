@@ -6,23 +6,69 @@ locals {
     destination_type      = "volume"
     delete_on_termination = false
   }] : []
+  cloudinit_templates = concat([
+      {
+        filename     = "base.cfg"
+        content_type = "text/cloud-config"
+        content      = templatefile(
+          "${path.module}/files/user_data.yaml.tpl",
+          {
+            node_name            = var.name
+            chrony               = var.chrony
+            ssh_host_key_rsa     = var.ssh_host_key_rsa
+            ssh_host_key_ecdsa   = var.ssh_host_key_ecdsa
+            docker_registry_auth = var.docker_registry_auth
+          }
+        )
+      }
+    ],
+    var.fluentbit.enabled ? [{
+      filename     = "fluent_bit.cfg"
+      content_type = "text/cloud-config"
+      content      = module.fluentbit_configs.configuration
+    }] : []
+  )
+}
+
+module "fluentbit_configs" {
+  source               = "git::https://github.com/Ferlab-Ste-Justine/terraform-cloudinit-templates.git//fluent-bit?ref=v0.13.1"
+  install_dependencies = true
+  fluentbit = {
+    metrics          = var.fluentbit.metrics
+    systemd_services = concat(
+      var.fluentbit.etcd_tag != "" ? [{
+        tag     = var.fluentbit.etcd_tag
+        service = "etcd.service"
+      }] : [],
+      [
+        {
+          tag     = var.fluentbit.containerd_tag
+          service = "containerd.service"
+        },
+        {
+          tag     = var.fluentbit.kubelet_tag
+          service = "kubelet.service"
+        },
+        {
+          tag     = var.fluentbit.node_exporter_tag
+          service = "node-exporter.service"
+        }
+      ]
+    )
+    forward = var.fluentbit.forward
+  }
 }
 
 data "template_cloudinit_config" "user_data" {
-  gzip          = false
-  base64_encode = false
-  part {
-    content_type = "text/cloud-config"
-    content = templatefile(
-      "${path.module}/files/user_data.yaml.tpl",
-      {
-        node_name            = var.name
-        chrony               = var.chrony
-        ssh_host_key_rsa     = var.ssh_host_key_rsa
-        ssh_host_key_ecdsa   = var.ssh_host_key_ecdsa
-        docker_registry_auth = var.docker_registry_auth
-      }
-    )
+  gzip          = true
+  base64_encode = true
+  dynamic "part" {
+    for_each = local.cloudinit_templates
+    content {
+      filename     = part.value["filename"]
+      content_type = part.value["content_type"]
+      content      = part.value["content"]
+    }
   }
 }
 

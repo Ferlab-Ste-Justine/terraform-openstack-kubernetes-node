@@ -104,3 +104,44 @@ variable "docker_registry_auth" {
     password = ""
   }
 }
+
+variable "fluentbit" {
+  description = "Fluent-bit configuration"
+  sensitive = true
+  type = object({
+    enabled = bool
+    containerd_tag = string
+    kubelet_tag = string
+    etcd_tag = string
+    node_exporter_tag = string
+    metrics = object({
+      enabled = bool
+      port    = number
+    })
+    forward = object({
+      domain = string
+      port = number
+      hostname = string
+      shared_key = string
+      ca_cert = string
+    })
+  })
+  default = {
+    enabled = false
+    containerd_tag = ""
+    kubelet_tag = ""
+    etcd_tag = ""
+    node_exporter_tag = ""
+    metrics = {
+      enabled = false
+      port = 0
+    }
+    forward = {
+      domain = ""
+      port = 0
+      hostname = ""
+      shared_key = ""
+      ca_cert = ""
+    }
+  }
+}

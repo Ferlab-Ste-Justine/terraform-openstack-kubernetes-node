@@ -30,3 +30,18 @@ This terraform module provisions a base vm that can be setup as a worker or mast
   - **servers**: List of ntp servers to sync from with each entry containing two properties, **url** and **options** (see: https://chrony.tuxfamily.org/doc/4.2/chrony.conf.html#server)
   - **pools**: A list of ntp server pools to sync from with each entry containing two properties, **url** and **options** (see: https://chrony.tuxfamily.org/doc/4.2/chrony.conf.html#pool)
   - **makestep**: An object containing remedial instructions if the clock of the vm is significantly out of sync at startup. It is an object containing two properties, **threshold** and **limit** (see: https://chrony.tuxfamily.org/doc/4.2/chrony.conf.html#makestep)
+- **fluentbit**: Optional fluent-bit configuration to securely route logs to a fluentd/fluent-bit node using the forward plugin. It has the following keys:
+  - **enabled**: If set to false (the default), fluent-bit will not be installed.
+  - **containerd_tag**: Tag to assign to logs coming from containerd. Relevant for both masters and workers.
+  - **kubelet_tag**: Tag to assign to logs coming from kubelet. Relevant for both masters and workers.
+  - **etcd_tag**: Tag to assign to logs coming from etcd. Should be set to empty string on worker nodes to disable as etcd will only be present on master nodes.
+  - **node_exporter_tag** Tag to assign to logs coming from the prometheus node exporter
+  - **metrics**: Configuration for metrics fluent-bit exposes.
+    - **enabled**: Whether to enable the metrics or not
+    - **port**: Port to expose the metrics on
+  - **forward**: Configuration for the forward plugin that will talk to the external fluentd/fluent-bit node. It has the following keys:
+    - **domain**: Ip or domain name of the remote fluentd node.
+    - **port**: Port the remote fluentd node listens on
+    - **hostname**: Unique hostname identifier for the vm
+    - **shared_key**: Secret shared key with the remote fluentd node to authentify the client
+    - **ca_cert**: CA certificate that signed the remote fluentd node's server certificate (used to authentify it)
