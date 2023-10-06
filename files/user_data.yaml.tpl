@@ -20,6 +20,7 @@ ssh_keys:
     ${indent(4, ssh_host_key_ecdsa.private)}
 %{ endif ~}
 %{ endif ~}
+
 write_files:
   #Chrony config
 %{ if chrony.enabled ~}
@@ -55,26 +56,26 @@ write_files:
 
       [Install]
       WantedBy=multi-user.target
+%{ if docker_registry_auth.enabled ~}
+  # Docker registry auth
+  - path: /root/.docker/config.json
+    owner: root:root
+    permissions: "0600"
+    content: |
+      {
+        "auths": {
+          "${docker_registry_auth.url}": {
+            "auth": "${base64encode("${docker_registry_auth.username}:${docker_registry_auth.password}")}"
+          }
+        }
+      }
+%{ endif ~}
+
 %{ if chrony.enabled ~}
 packages:
   - chrony
 %{ endif ~}
 
-%{ if docker_registry_auth.enabled ~}
- write_files:
-   - path: /root/.docker/config.json
-     owner: root:root
-     permissions: "0600"
-     content: |
-       {
-         "auths": {
-           "${docker_registry_auth.url}": {
-             "auth": "${base64encode("${docker_registry_auth.username}:${docker_registry_auth.password}")}"
-           }
-         }
-       }
- %{ endif ~}
- 
 runcmd:
   - /sbin/sysctl -w net.ipv4.conf.all.forwarding=1
   #Finalize Chrony Setup
