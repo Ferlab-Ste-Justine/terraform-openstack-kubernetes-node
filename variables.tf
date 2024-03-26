@@ -8,6 +8,12 @@ variable "network_port" {
   type        = any
 }
 
+variable "cephfs_network_port" {
+  description = "CephFS network port to assign to the node. Should be of type openstack_networking_port_v2 or null if not used."
+  type        = any
+  default     = null
+}
+
 variable "server_group" {
   description = "Server group to assign to the node. Should be of type openstack_compute_servergroup_v2"
   type        = any
@@ -145,3 +151,4 @@ variable "fluentbit" {
     }
   }
 }
+
