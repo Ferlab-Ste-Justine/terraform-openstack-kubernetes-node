@@ -80,7 +80,6 @@ resource "openstack_compute_instance_v2" "k8_node" {
 
   user_data = data.template_cloudinit_config.user_data.rendered
 
-  # Configurer dynamiquement les interfaces réseau
   dynamic "network" {
     for_each = var.network_ports
     content {
