@@ -7,8 +7,7 @@ This terraform module provisions a base vm that can be setup as a worker or mast
 ## Input Variables
 
 - **name**: Name to give to the vm.
-- **network_port**: Resource of type **openstack_networking_port_v2** to assign to the vm for network connectivity.
-- **cephfs_network_port**: CephFS network port to assign to the node. Should be of type `openstack_networking_port_v2` or null if not used.
+- **network_ports**: List of resources of type **openstack_networking_port_v2** to assign to the vm for network connectivity.
 - **server_group**: Server group to assign to the node. Should be of type **openstack_compute_servergroup_v2**.
 - **image_source**: Source of the image to provision the bastion on. It takes the following keys (only one of the two fields should be used, the other one should be empty):
   - **image_id**: Id of the image to associate with a vm that has local storage

@@ -80,13 +80,9 @@ resource "openstack_compute_instance_v2" "k8_node" {
 
   user_data = data.template_cloudinit_config.user_data.rendered
 
-  network {
-    port = var.network_port.id
-  }
-
-  # Dynamically attach the CephFS network port if it is provided
+  # Configurer dynamiquement les interfaces réseau
   dynamic "network" {
-    for_each = var.cephfs_network_port != null ? [var.cephfs_network_port] : []
+    for_each = var.network_ports
     content {
       port = network.value.id
     }
